@@ -1,5 +1,6 @@
 package de.testaufgaben.nodapo;
 
+import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -85,19 +86,20 @@ public class Shop {
 	 * @return true, if is isbn13
 	 */
 	public static boolean isISBN13(String input) {
-		String digits = input.replaceAll("[\\-]", "");
-		if (digits.length() != 13 || !digits.matches("[0-9]+")) {
-			return false;
-		}
-		char[] chars = digits.toCharArray();
+	    String digits = input.replaceAll("[\\-]", "");
+	    if (digits.length() != 13 || !digits.matches("[0-9]+")) {
+	        return false;
+	    }
+	    List<Integer> digitsList = CharBuffer.wrap(digits.toCharArray()).chars()
+	              .mapToObj(ch -> Character.getNumericValue(ch))
+	              .collect(Collectors.toList());
 	    Integer even = 0;
 	    Integer odd = 0;
-	    for (int i = 0; i < (chars.length - 1) / 2; i++) {
-	        even += chars[2 * i] - 48;
-	        odd += chars[2 * i + 1] - 48;
+	    for(int i = 0; i < digitsList.size()/2; i++) {
+	        even += digitsList.get(2 * i);
+	        odd += digitsList.get(2 * i + 1);
 	    }
-	    return Character.getNumericValue(chars[chars.length-1]) == 
+	    return digitsList.get(digitsList.size() - 1) == 
 	    		(10 - (even + 3 * odd) % 10) % 10;
-		
 	}
 }
